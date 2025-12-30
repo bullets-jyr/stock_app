@@ -13,6 +13,7 @@ _$CompanyInfoStateImpl _$$CompanyInfoStateImplFromJson(
           ? null
           : CompanyInfo.fromJson(json['companyInfo'] as Map<String, dynamic>),
       isLoading: json['isLoading'] as bool? ?? false,
+      errorMessage: json['errorMessage'] as String?,
     );
 
 Map<String, dynamic> _$$CompanyInfoStateImplToJson(
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$CompanyInfoStateImplToJson(
     <String, dynamic>{
       'companyInfo': instance.companyInfo,
       'isLoading': instance.isLoading,
+      'errorMessage': instance.errorMessage,
     };

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:stock_app/domain/repository/stock_repository.dart';
+import 'package:stock_app/presentation/company_info/company_info_screen.dart';
+import 'package:stock_app/presentation/company_info/company_info_view_model.dart';
 import 'package:stock_app/presentation/company_listings/company_listings_action.dart';
 import 'package:stock_app/presentation/company_listings/company_listings_view_model.dart';
 
@@ -54,7 +58,29 @@ class CompanyListingsScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return Column(
                       children: [
-                        ListTile(title: Text(state.companies[index].name)),
+                        ListTile(
+                          title: Text(state.companies[index].name),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  final repository =
+                                      GetIt.instance<StockRepository>();
+
+                                  final symbol = state.companies[index].symbol;
+                                  return ChangeNotifierProvider(
+                                    create: (_) => CompanyInfoViewModel(
+                                      repository,
+                                      symbol,
+                                    ),
+                                    child: const CompanyInfoScreen(),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
                         Divider(color: Theme.of(context).colorScheme.secondary),
                       ],
                     );
