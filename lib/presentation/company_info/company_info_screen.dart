@@ -67,7 +67,8 @@ class CompanyInfoScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: StockChart(
                 infos: state.stockInfos,
-                color: Theme.of(context).colorScheme.primary,
+                graphColor: Theme.of(context).colorScheme.primary,
+                textColor: Theme.of(context).colorScheme.onSurface,
               ),
             ),
         ],
