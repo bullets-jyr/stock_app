@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:stock_app/domain/repository/stock_repository.dart';
+import 'package:stock_app/presentation/company_listings/company_listings_action.dart';
 import 'package:stock_app/presentation/company_listings/company_listings_state.dart';
 
 class CompanyListingsViewModel with ChangeNotifier {
@@ -7,27 +10,37 @@ class CompanyListingsViewModel with ChangeNotifier {
 
   var _state = CompanyListingsState();
 
+  Timer? _debounce;
+
   CompanyListingsState get state => _state;
 
   CompanyListingsViewModel(this._repository) {
     _getCompanyListings();
   }
 
-  Future<void> _getCompanyListings({
+  void onAction(CompanyListingsAction action) {
+    action.when(
+      refresh: () => _getCompanyListings(fetchFromRemote: true),
+      onSearchQueryChange: (query) {
+        _debounce?.cancel();
+        _debounce = Timer(const Duration(milliseconds: 500), () {
+          _getCompanyListings(query: query);
+        });
+      },
+    );
+  }
+
+  Future _getCompanyListings({
     bool fetchFromRemote = false,
     String query = '',
   }) async {
-    _state = state.copyWith(
-      isLoading: true,
-    );
+    _state = state.copyWith(isLoading: true);
     notifyListeners();
 
     final result = await _repository.getCompanyListings(fetchFromRemote, query);
     result.when(
       success: (listings) {
-        _state = state.copyWith(
-          companies: listings,
-        );
+        _state = state.copyWith(companies: listings);
       },
       error: (e) {
         // TODO : 에러처리
@@ -35,9 +48,7 @@ class CompanyListingsViewModel with ChangeNotifier {
       },
     );
 
-    _state = state.copyWith(
-      isLoading: false,
-    );
+    _state = state.copyWith(isLoading: false);
     notifyListeners();
   }
 }
